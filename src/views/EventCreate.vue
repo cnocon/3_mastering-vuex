@@ -1,13 +1,15 @@
 <template>
   <div>
     <h4>Create an Event for User ID of&nbsp;<code :style="codeStyles">{{ user.id }}</code></h4>
-    <p>There are currently <b>{{ catLength }}</b> categories. We are displaying the category count with Vuex getters and our component's computed properties.</p>
+    <p v-html="localComputed.paragraph"></p>
     <p>We used a computed property to display {{ user.name }}'s name.</p>
+    <p><b>Example Event</b></p>
+    {{ getSingleEvent(1) }}
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   data() {
@@ -22,30 +24,19 @@ export default {
       }
     }
   },
-  // ROUND 4: How to have additional local computed properties
   computed: {
-    catLength() {
-      return this.$store.getters.catLength
+    localComputed() {
+      return {
+        paragraph: `There are currently <b>${
+          this.catCount
+        }</b> categories. We are displaying the category count with Vuex getters and our component's computed properties.`
+      }
     },
+    ...mapGetters({
+      catCount: 'catLength',
+      getSingleEvent: 'getEventById'
+    }),
     ...mapState(['user', 'categories'])
   }
 }
-
-// ROUND 1
-// computed: {
-//    userName() {
-//     return this.$store.state.user.name
-//   },
-//   userId() {
-//     return this.$store.state.user.id
-//   },
-// }
-// ROUND 2
-// computed: mapState({
-//   userName: state => state.user.name,
-//   // categories: state => state.categories
-//   categories: 'categories' // If we’re wanting to access the top-level State (not using dot notation), we can do this
-// })
-// ROUND 3
-// computed: mapState(['categories', 'user']) // If you only need top level state you can even do this
 </script>
