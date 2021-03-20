@@ -1,31 +1,31 @@
 <template>
   <div>
-    <h1>Events Listing</h1>
-    <EventCard v-for="event in events" :key="event.id" :event="event"/>
+    <div v-if="showLoading"><h3>Loading...</h3></div>
+    <div v-else>
+      <h1>Events Listing</h1>
+      <EventCard v-for="event in latestEvents" :key="event.id" :event="event"/>
+    </div>
   </div>
 </template>
 
 <script>
 import EventCard from '@/components/EventCard.vue'
-import EventService from '@/services/EventService.js'
+// import EventService from '@/services/EventService.js'
 
 export default {
   components: {
     EventCard
   },
-  data() {
-    return {
-      events: []
+  computed: {
+    showLoading() {
+      return this.$store.state.isLoading
+    },
+    latestEvents() {
+      return this.$store.state.events
     }
   },
-  created() {
-    EventService.getEvents()
-      .then(response => {
-        this.events = response.data
-      })
-      .catch(error => {
-        console.log('There was an error:', error.response)
-      })
+  beforeMount() {
+    this.$store.dispatch('fetchEvents')
   }
 }
 </script>

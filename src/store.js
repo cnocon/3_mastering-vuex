@@ -1,10 +1,21 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 
 Vue.use(Vuex)
 
+const API_CLIENT = axios.create({
+  baseURL: `http://localhost:3000`,
+  withCredentials: false,
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  }
+})
+
 export default new Vuex.Store({
   state: {
+    isLoading: false,
     user: { id: 'abc123', name: 'Obie Buckets' },
     categories: [
       'sustainability',
@@ -21,39 +32,28 @@ export default new Vuex.Store({
       { id: 3, text: 'third todo', done: true },
       { id: 4, text: '4th todo', done: false }
     ],
-    events: [
-      {
-        id: 1,
-        title: 'Beach Cleanup',
-        date: 'Aug 28 2018',
-        time: '1:00',
-        location: 'Daytona Beach',
-        description: "Let's clean up this beach.",
-        organizer: 'Adam Jahr',
-        category: 'sustainability',
-        attendees: [
-          {
-            id: 'abc123',
-            name: 'Adam Jahr'
-          },
-          {
-            id: 'def456',
-            name: 'Gregg Pollack'
-          },
-          {
-            id: 'ghi789',
-            name: 'Beth Swanson'
-          },
-          {
-            id: 'jkl101',
-            name: 'Mary Gordon'
-          }
-        ]
-      }
-    ]
+    events: []
   },
-  mutations: {},
-  actions: {},
+  mutations: {
+    SET_EVENTS(state, events) {
+      state.events = events
+    },
+    SET_LOADING(state) {
+      state.isLoading = !state.isLoading
+    }
+  },
+  actions: {
+    fetchEvents({ commit, state }) {
+      commit('SET_LOADING')
+      console.log(state.isLoading)
+      API_CLIENT.get('/events').then(response => {
+        commit('SET_EVENTS', response.data)
+        setTimeout(() => {
+          commit('SET_LOADING')
+        }, 3000)
+      })
+    }
+  },
   getters: {
     catLength: state => {
       return state.categories.length
