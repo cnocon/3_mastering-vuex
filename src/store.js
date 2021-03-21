@@ -1,22 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from 'axios'
+import EventService from '@/services/EventService'
 
 Vue.use(Vuex)
-
-const API_CLIENT = axios.create({
-  baseURL: `http://localhost:3000`,
-  withCredentials: false,
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  }
-})
 
 export default new Vuex.Store({
   state: {
     isLoading: false,
-    user: { id: 'abc123', name: 'Obie Buckets' },
+    user: { id: 4819676, name: 'Obie Buckets' },
     categories: [
       'sustainability',
       'nature',
@@ -40,17 +31,34 @@ export default new Vuex.Store({
     },
     SET_LOADING(state) {
       state.isLoading = !state.isLoading
+    },
+    ADD_EVENT(state, event) {
+      state.events.push(event)
     }
   },
   actions: {
-    fetchEvents({ commit, state }) {
+    // destructuring context object to { commit }
+    fetchEvents({ commit }) {
       commit('SET_LOADING')
-      console.log(state.isLoading)
-      API_CLIENT.get('/events').then(response => {
-        commit('SET_EVENTS', response.data)
-        setTimeout(() => {
+      EventService.getEvents()
+        .then(response => {
+          commit('SET_EVENTS', response.data)
+        })
+        .catch(e => {
+          console.error(
+            'Request to fetch events failed in fetchEvents action in store.js',
+            e
+          )
+        })
+        .then(() => {
           commit('SET_LOADING')
-        }, 3000)
+        })
+    },
+    createEvent({ commit }, event) {
+      commit('SET_LOADING')
+      return EventService.postEvent(event).then(() => {
+        commit('SET_LOADING')
+        commit('ADD_EVENT', event)
       })
     }
   },
@@ -65,9 +73,10 @@ export default new Vuex.Store({
       return state.todos.length - getters.doneTodos.length
     },
     getEventById: state => id => {
-      return state.events.find(event => {
-        return event.id === id
-      })
+      return state.events.find(event => event.id === id)
+    },
+    isLoaded: state => {
+      return !state.isLoading
     }
   }
 })

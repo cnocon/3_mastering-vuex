@@ -1,42 +1,92 @@
 <template>
   <div>
-    <h4>Create an Event for User ID of&nbsp;<code :style="codeStyles">{{ user.id }}</code></h4>
-    <p v-html="localComputed.paragraph"></p>
-    <p>We used a computed property to display {{ user.name }}'s name.</p>
-    <p><b>Example Event</b></p>
-    {{ getSingleEvent(1) }}
+    <h1>Create an Event</h1>
+    <form @submit.prevent="createEvent">
+      <label>Select a category</label>
+      <select v-model="event.category">
+        <option v-for="cat in categories" :key="cat">{{ cat }}</option>
+      </select>
+      <h3>Name & describe your event</h3>
+      <div class="field">
+        <label>Title</label>
+        <input v-model="event.title" type="text" placeholder="Add an event title"/>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <input v-model="event.description" type="text" placeholder="Add a description"/>
+      </div>
+      <h3>Where is your event?</h3>
+      <div class="field">
+        <label>Location</label>
+        <input v-model="event.location" type="text" placeholder="Add a location"/>
+      </div>
+      <h3>When is your event?</h3>
+      <div class="field">
+        <label>Date</label>
+        <datepicker v-model="event.date" placeholder="Select a date"/>
+      </div>
+      <div class="field">
+        <label>Select a time</label>
+        <select v-model="event.time">
+          <option v-for="time in times" :key="time">{{ time }}</option>
+        </select>
+      </div>
+      <input type="submit" class="button -fill-gradient" value="Submit"/>
+    </form>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import Datepicker from 'vuejs-datepicker'
 
 export default {
+  components: {
+    Datepicker
+  },
   data() {
+    const times = []
+
+    for (let i = 1; i <= 24; i++) {
+      times.push(i + ':00')
+    }
+
     return {
-      codeStyles: {
-        backgroundColor: '#ddd',
-        color: 'red',
-        fontWeight: 400,
-        borderRadius: '4px',
-        lineHeight: '1.1em',
-        padding: '0 2px'
-      }
+      event: this.createFreshEvent(),
+      times,
+      categories: this.$store.state.categories
     }
   },
-  computed: {
-    localComputed() {
+  methods: {
+    createFreshEvent() {
+      const user = this.$store.state.user
+      const id = Math.floor(Math.random() * 10000000)
       return {
-        paragraph: `There are currently <b>${
-          this.catCount
-        }</b> categories. We are displaying the category count with Vuex getters and our component's computed properties.`
+        id: id,
+        category: '',
+        organizer: user,
+        title: '',
+        description: '',
+        location: '',
+        date: '',
+        time: '',
+        attendees: []
       }
     },
-    ...mapGetters({
-      catCount: 'catLength',
-      getSingleEvent: 'getEventById'
-    }),
-    ...mapState(['user', 'categories'])
+    // Calling .then here because we will be working with the second then called on the response since in the createEvent action in the store, we're now actually returning the EventService's request method, which has already had one then called on it
+    // We did this to ensure we had successfully created the event before clearing out the form via this.createFreshEvent below
+    createEvent() {
+      this.$store
+        .dispatch('createEvent', this.event)
+        .then(() => {
+          this.event = this.createFreshEvent()
+        })
+        .catch(e => {
+          console.error('There was problem creating your event.', e)
+        })
+    }
   }
 }
 </script>
+
+<style scoped>
+</style>

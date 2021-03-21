@@ -1,16 +1,21 @@
 <template>
   <div id="app">
     <NavBar/>
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
 <script>
+import { mapGetters, mapState } from 'vuex'
 import NavBar from '@/components/NavBar.vue'
 
 export default {
   components: {
     NavBar
+  },
+  computed: {
+    ...mapState(['isLoading']),
+    ...mapGetters({ isNotLoading: 'isLoaded' })
   }
 }
 </script>
