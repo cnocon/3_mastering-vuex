@@ -29,18 +29,14 @@ export default new Vuex.Store({
     SET_EVENTS(state, events) {
       state.events = events
     },
-    SET_LOADING(state) {
-      state.isLoading = !state.isLoading
-    },
     ADD_EVENT(state, event) {
       state.events.push(event)
     }
   },
   actions: {
     // destructuring context object to { commit }
-    fetchEvents({ commit }) {
-      commit('SET_LOADING')
-      EventService.getEvents()
+    fetchEvents({ commit }, { perPage, page }) {
+      EventService.getEvents(page, perPage)
         .then(response => {
           commit('SET_EVENTS', response.data)
         })
@@ -50,14 +46,9 @@ export default new Vuex.Store({
             e
           )
         })
-        .then(() => {
-          commit('SET_LOADING')
-        })
     },
     createEvent({ commit }, event) {
-      commit('SET_LOADING')
       return EventService.postEvent(event).then(() => {
-        commit('SET_LOADING')
         commit('ADD_EVENT', event)
       })
     }
@@ -75,8 +66,8 @@ export default new Vuex.Store({
     getEventById: state => id => {
       return state.events.find(event => event.id === id)
     },
-    isLoaded: state => {
-      return !state.isLoading
+    eventsCount: state => {
+      return state.events.length
     }
   }
 })
