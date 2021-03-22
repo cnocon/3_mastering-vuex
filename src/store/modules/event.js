@@ -1,22 +1,6 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
 import EventService from '@/services/EventService'
-
-Vue.use(Vuex)
-
-export default new Vuex.Store({
+export default {
   state: {
-    isLoading: false,
-    user: { id: 4819676, name: 'Obie Buckets' },
-    categories: [
-      'sustainability',
-      'nature',
-      'animal welfare',
-      'housing',
-      'education',
-      'food',
-      'community'
-    ],
     events: [],
     eventsTotal: 0,
     event: {}
@@ -37,7 +21,8 @@ export default new Vuex.Store({
   },
   actions: {
     // destructuring context object to { commit }
-    fetchEvents({ commit }, { perPage, page }) {
+    fetchEvents({ commit, rootMutations }, { perPage, page }) {
+      console.log(rootMutations)
       EventService.getEvents(page, perPage)
         .then(response => {
           commit(
@@ -67,7 +52,6 @@ export default new Vuex.Store({
         EventService.getEvent(id)
           .then(response => {
             commit('SET_EVENT', response.data)
-            commit('SET_EVENTS_CACHE', [response.data])
           })
           .catch(error => {
             console.log('There was an error:', error.response)
@@ -80,4 +64,4 @@ export default new Vuex.Store({
       return state.events.find(event => event.id === id)
     }
   }
-})
+}
