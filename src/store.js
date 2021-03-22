@@ -36,38 +36,6 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    createEvent({ commit }, event) {
-      return EventService.postEvent(event).then(() => {
-        commit('ADD_EVENT', event)
-      })
-    },
-    fetchEvent({ commit, getters }, id) {
-      const event = getters.getEventById(id)
-
-      if (event) {
-        console.log('event', event)
-        commit('SET_EVENT', event)
-      } else {
-        EventService.getEvent(id)
-          .then(response => {
-            console.log(response);
-            commit('SET_EVENT', response.data)
-          })
-          .catch(error => {
-            console.log('There was an error:', error.response)
-          })
-      }
-      EventService.getEvent(id)
-        .then(response => {
-          commit('SET_EVENT', response.data)
-        })
-        .catch(e => {
-          console.log(
-            'Request to fetch single event failed in getEvent action in store.js',
-            e
-          )
-        })
-    },
     // destructuring context object to { commit }
     fetchEvents({ commit }, { perPage, page }) {
       EventService.getEvents(page, perPage)
@@ -81,6 +49,30 @@ export default new Vuex.Store({
         .catch(error => {
           console.log('There was an error:', error.response)
         })
+    },
+    createEvent({ commit }, event) {
+      return EventService.postEvent(event).then(() => {
+        commit('ADD_EVENT', event)
+      })
+    },
+    fetchEvent({ commit, getters }, id) {
+      // lets use a caching strategy and try to find the event in
+      // our existing events store first
+      const event = getters.getEventById(id)
+
+      // if we don't find it in our store, THEN we will hit the API again
+      if (event) {
+        commit('SET_EVENT', event)
+      } else {
+        EventService.getEvent(id)
+          .then(response => {
+            commit('SET_EVENT', response.data)
+            commit('SET_EVENTS_CACHE', [response.data])
+          })
+          .catch(error => {
+            console.log('There was an error:', error.response)
+          })
+      }
     }
   },
   getters: {
