@@ -18,6 +18,7 @@ export default new Vuex.Store({
       'community'
     ],
     events: [],
+    eventsTotal: 0,
     event: {}
   },
   mutations: {
@@ -26,6 +27,9 @@ export default new Vuex.Store({
     },
     SET_EVENTS(state, events) {
       state.events = events
+    },
+    SET_EVENTS_TOTAL(state, eventsTotal) {
+      state.eventsTotal = eventsTotal
     },
     SET_EVENT(state, event) {
       state.event = event
@@ -36,19 +40,6 @@ export default new Vuex.Store({
       return EventService.postEvent(event).then(() => {
         commit('ADD_EVENT', event)
       })
-    },
-    // destructuring context object to { commit }
-    fetchEvents({ commit }, { perPage, page }) {
-      EventService.getEvents(page, perPage)
-        .then(response => {
-          commit('SET_EVENTS', response.data)
-        })
-        .catch(e => {
-          console.error(
-            'Request to fetch events failed in fetchEvents action in store.js',
-            e
-          )
-        })
     },
     fetchEvent({ commit, getters }, id) {
       const event = getters.getEventById(id)
@@ -76,17 +67,25 @@ export default new Vuex.Store({
             e
           )
         })
+    },
+    // destructuring context object to { commit }
+    fetchEvents({ commit }, { perPage, page }) {
+      EventService.getEvents(page, perPage)
+        .then(response => {
+          commit(
+            'SET_EVENTS_TOTAL',
+            parseInt(response.headers['x-total-count'])
+          )
+          commit('SET_EVENTS', response.data)
+        })
+        .catch(error => {
+          console.log('There was an error:', error.response)
+        })
     }
   },
   getters: {
-    catLength: state => {
-      return state.categories.length
-    },
     getEventById: state => id => {
       return state.events.find(event => event.id === id)
-    },
-    eventsCount: state => {
-      return state.events.length
     }
   }
 })
