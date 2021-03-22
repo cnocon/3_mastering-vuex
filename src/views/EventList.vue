@@ -26,13 +26,13 @@ export default {
       return parseInt(this.$route.query.page) || 1
     },
     hasNextPage() {
-      return this.page < Math.ceil(this.event.eventsTotal / 2)
+      return this.page < Math.ceil(this.event.eventsTotal / 3)
     },
     ...mapState(['event', 'user'])
   },
   created() {
     this.$store.dispatch('fetchEvents', {
-      perPage: 2,
+      perPage: 3,
       page: this.page
     })
   }

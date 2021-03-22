@@ -75,18 +75,13 @@ export default {
     // Calling .then here because we will be working with the second then called on the response since in the createEvent action in the store, we're now actually returning the EventService's request method, which has already had one then called on it
     // We did this to ensure we had successfully created the event before clearing out the form via this.createFreshEvent below
     createEvent() {
-      this.$store
-        .dispatch('createEvent', this.event)
-        .then(() => {
-          this.$router.push({
-            name: 'event-show',
-            params: { id: this.event.id }
-          })
-          this.event = this.createFreshEvent()
+      this.$store.dispatch('createEvent', this.event).then(() => {
+        this.$router.push({
+          name: 'event-show',
+          params: { id: this.event.id }
         })
-        .catch(e => {
-          console.log('There was problem creating your event.', e)
-        })
+        this.event = this.createFreshEvent()
+      })
     }
   }
 }

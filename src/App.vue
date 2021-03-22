@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <NavBar/>
+    <NotificationContainer />
     <router-view :key="$route.fullPath"/>
   </div>
 </template>
@@ -8,10 +9,12 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import NavBar from '@/components/NavBar.vue'
+import NotificationContainer from '@/components/NotificationContainer.vue'
 
 export default {
   components: {
-    NavBar
+    NavBar,
+    NotificationContainer
   },
   computed: {
     ...mapState(['isLoading']),
@@ -103,7 +106,10 @@ small {
   color: #000;
 }
 .-text-error {
-  color: tomato;
+  color: hsl(9, 100%, 68%);
+}
+.-text-success {
+  color:hsl(154, 80%, 48%);
 }
 .-text-gray {
   color: rgba(0, 0, 0, 0.5);

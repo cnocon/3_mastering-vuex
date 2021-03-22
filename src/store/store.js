@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import user from '@/store/modules/user.js' // This pulls in all the constants in user.js
 import event from '@/store/modules/event.js'
+import * as notification from '@/store/modules/notification.js'
+
 
 Vue.use(Vuex)
 
@@ -10,7 +12,8 @@ export default new Vuex.Store({
   modules: {
     // from our components, when we want to reference any user variable, we do `this.$store.state.user.user`
     user,
-    event
+    event,
+    notification
   },
   state: {
     categories: [
