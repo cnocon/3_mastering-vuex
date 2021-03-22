@@ -73,31 +73,45 @@
       ]
     },
     {
-      "id": 6862674,
+      "id": 2394045,
       "category": "nature",
       "organizer": {
         "id": 4819676,
         "name": "Obie Buckets"
       },
-      "title": "Title",
+      "title": "Test Title",
       "description": "Description",
-      "location": "Location",
+      "location": "",
       "date": "",
       "time": "",
       "attendees": []
     },
     {
-      "id": 2160528,
+      "id": 5880196,
+      "category": "housing",
+      "organizer": {
+        "id": 4819676,
+        "name": "Obie Buckets"
+      },
+      "title": "Housing Title",
+      "description": "Housing Description",
+      "location": "",
+      "date": "",
+      "time": "",
+      "attendees": []
+    },
+    {
+      "id": 7788703,
       "category": "animal welfare",
       "organizer": {
         "id": 4819676,
         "name": "Obie Buckets"
       },
-      "title": "Cat Adoption Event",
-      "description": "Treehouse Humane Society showcases its fine furry friends all day long at this exclusive adoption event.",
-      "location": "Chicago, IL",
-      "date": "2021-05-01T23:42:00.000Z",
-      "time": "9:00",
+      "title": "Test",
+      "description": "",
+      "location": "",
+      "date": "",
+      "time": "",
       "attendees": []
     }
   ]
